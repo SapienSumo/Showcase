@@ -15,3 +15,6 @@ dist/
 .DS_Store
 .vite/
 coverage/
+
+# Local knowledge graphs and Obsidian exports
+graphify-out/
