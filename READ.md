@@ -136,6 +136,8 @@ CSS is responsible for:
 - hover, reveal, orbit, marquee, and status animations;
 - reduced-motion behavior for users who request it.
 
+The full-screen opening contains a progressively enhanced WebGL fluid canvas. Pointer movement injects low-opacity color just behind the current pointer position while applying softened forward momentum. This keeps the smoke ribbon trailing during movement, then lets the plume carry forward through the point where the cursor stops. Cursor travel continuously interpolates the dye palette forward and backward through the Showcase colors, so ascending and descending gradients form inside the smoke trails rather than across the screen. The current dye color also drives a broader white-core bloom above the intro content, using screen blending to brighten typography and grid details beneath the live injection point before fading after movement stops. The simulation starts only after the first pointer movement while the intro is visible, pauses with the browser tab, idles after the dye dissipates, and clamps device-pixel ratio to limit GPU cost. Touch devices, reduced-motion users, and browsers without the required WebGL extensions retain the stable intro backdrop without the fluid enhancement.
+
 ## Shared CSS system
 
 ### Design tokens
@@ -298,13 +300,14 @@ This is the application's main data pipeline: structured objects flow through Re
 
 ## Visual effects without image assets
 
-Most of the visible artwork is produced locally from HTML, SVG, and CSS:
+Most of the visible artwork is produced locally from HTML, SVG, CSS, and the opening screen's dependency-free WebGL canvas:
 
 - inline SVG supplies the arrows, spark icon, and brand mark;
 - gradients and dotted backgrounds create texture;
 - borders, transforms, and `clip-path` create cards and cut-corner buttons;
 - absolutely positioned elements create dashboards, boards, orbits, and archive cards;
-- keyframes animate movement without JavaScript animation loops.
+- keyframes animate most movement without JavaScript animation loops;
+- `FluidCanvas` and `fluidSimulation.ts` provide the pointer-driven opening atmosphere with an isolated, pausable render loop.
 
 This keeps the landing page self-contained and makes its visuals responsive and themeable.
 
@@ -318,6 +321,7 @@ This keeps the landing page self-contained and makes its visuals responsive and 
 | `src/components/layout/` | Site-wide layout behavior, including the header and page-load overlay. |
 | `src/components/sections/` | Hero, work, approach, principles, and contact sections. |
 | `src/components/ui/` | Reusable SVG interface primitives and the smooth signal cursor. |
+| `src/lib/fluidSimulation.ts` | Small WebGL velocity-and-dye solver used by the opening canvas. |
 | `src/data/siteContent.ts` | Navigation, projects, capabilities, and shared content constants. |
 | `src/types/content.ts` | Shared TypeScript contracts for content. |
 | `src/styles.css` | Tokens, shared classes, layout, responsive rules, and animation. |

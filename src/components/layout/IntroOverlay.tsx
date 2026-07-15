@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { FluidCanvas } from '../ui/FluidCanvas'
 import { Arrow, Mark } from '../ui/Icons'
 
 type IntroPhase = 'loading' | 'ready' | 'exiting'
@@ -60,6 +61,7 @@ export function IntroOverlay({ open, onComplete }: IntroOverlayProps) {
       aria-describedby="intro-description"
     >
       <div className="intro-backdrop" />
+      <FluidCanvas />
       <div className="intro-fog intro-fog-one" aria-hidden="true" />
       <div className="intro-fog intro-fog-two" aria-hidden="true" />
 
