@@ -210,6 +210,47 @@ Fluid values such as `clamp(54px, 17vw, 84px)` scale typography between fixed mi
 
 The final `prefers-reduced-motion` media query effectively disables animations and smooth scrolling for users who have reduced motion enabled in their operating system.
 
+## Page-load intro and seamless reveal
+
+`IntroOverlay` is mounted above the existing page, so the Begin action never navigates and never reloads the browser. The main page is already rendered behind it.
+
+The interaction flow is:
+
+```text
+Page load or return visit
+    ↓
+IntroOverlay mounts and locks page scrolling
+    ↓ after the opening sequence
+Begin becomes available and receives keyboard focus
+    ↓ click, Enter, or Space
+Content blurs + two fog layers move apart + backdrop fades
+    ↓ after the exit animation
+Overlay unmounts and the existing main page is revealed
+```
+
+The intro state is deliberately not persisted. Every full page load starts with the overlay, including a manual reload or a later visit in a new tab. A `pageshow` listener also restores it when the browser returns to the page from its back/forward cache. The footer's **Replay intro** control starts a fresh overlay instance at any time.
+
+The page scroll position is reset to the top before the overlay opens. This prevents a browser-restored scroll position from revealing the middle or bottom of the main page after Begin is selected.
+
+The overlay uses a dialog landmark, locks background scrolling while active, focuses Begin when ready, and shortens its timers for `prefers-reduced-motion` users.
+
+## Smooth signal cursor
+
+`CustomCursor` renders a small coral signal point plus a softly lagging ring. A single `pointermove` listener records the target position; `requestAnimationFrame` interpolates the ring toward it while the point stays immediate. This creates smooth motion without triggering React renders on every pointer event.
+
+Interactive elements are detected through event delegation. Links, buttons, tabs, and elements with `data-cursor-label` expand the ring. A label can be supplied directly:
+
+```tsx
+<button data-cursor-label="BEGIN">Begin</button>
+```
+
+The cursor is progressive enhancement rather than required navigation:
+
+- it only activates when the device reports both hover support and a fine pointer;
+- it stays disabled for touch devices and reduced-motion users;
+- the operating-system cursor remains available whenever the enhancement is disabled;
+- its layers use `pointer-events: none`, so they cannot intercept clicks.
+
 ## Data and interaction flow
 
 There is no backend or global state manager in the current site. State stays close to the interface that owns it.
@@ -274,9 +315,9 @@ This keeps the landing page self-contained and makes its visuals responsive and 
 | `index.html` | Browser document shell and page metadata. |
 | `src/main.tsx` | React entry point; mounts `App` and imports global CSS. |
 | `src/App.tsx` | Small composition root and the page's main landmark. |
-| `src/components/layout/` | Site-wide layout behavior such as the responsive header. |
+| `src/components/layout/` | Site-wide layout behavior, including the header and page-load overlay. |
 | `src/components/sections/` | Hero, work, approach, principles, and contact sections. |
-| `src/components/ui/` | Reusable SVG interface primitives. |
+| `src/components/ui/` | Reusable SVG interface primitives and the smooth signal cursor. |
 | `src/data/siteContent.ts` | Navigation, projects, capabilities, and shared content constants. |
 | `src/types/content.ts` | Shared TypeScript contracts for content. |
 | `src/styles.css` | Tokens, shared classes, layout, responsive rules, and animation. |
@@ -289,7 +330,7 @@ This keeps the landing page self-contained and makes its visuals responsive and 
 ## Common development loop
 
 1. Start the site with `npm run dev`.
-2. Edit `src/App.tsx` for structure, content, or React behavior.
+2. Edit the focused component in `src/components/`; use `src/App.tsx` for top-level composition and intro lifecycle only.
 3. Edit `src/styles.css` for layout or visual behavior.
 4. Check desktop and mobile widths in the browser.
 5. Run `npm run lint`.
@@ -298,4 +339,4 @@ This keeps the landing page self-contained and makes its visuals responsive and 
 
 ## Current content placeholder
 
-Before public deployment, replace `hello@example.com` in `src/App.tsx` with the intended contact address. The three project stories are also starter content designed to demonstrate the component and visual system.
+Before public deployment, replace `hello@example.com` in `src/data/siteContent.ts` with the intended contact address. The three project stories are also starter content designed to demonstrate the component and visual system.

@@ -43,10 +43,10 @@ export function Hero() {
           clarity, and technical care.
         </p>
         <div className="hero-actions">
-          <a className="cut-button cut-button-dark" href="#work">
+          <a className="cut-button cut-button-dark" href="#work" data-cursor-label="VIEW">
             VIEW THE WORK <Arrow />
           </a>
-          <a className="text-link" href="#approach">
+          <a className="text-link" href="#approach" data-cursor-label="MORE">
             HOW I BUILD <Arrow size={16} />
           </a>
         </div>

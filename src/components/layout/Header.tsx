@@ -38,7 +38,7 @@ export function Header() {
       </div>
 
       <header className={`site-header ${scrolled ? 'is-scrolled' : ''}`}>
-        <a className="brand" href="#top" aria-label="Showcase home">
+        <a className="brand" href="#top" aria-label="Showcase home" data-cursor-label="TOP">
           <Mark />
           <span>SHOWCASE</span>
         </a>
@@ -55,7 +55,7 @@ export function Header() {
           ))}
         </nav>
 
-        <a className="nav-cta cut-button" href="#contact">
+        <a className="nav-cta cut-button" href="#contact" data-cursor-label="START">
           START SOMETHING <Arrow size={15} />
         </a>
 
@@ -64,6 +64,7 @@ export function Header() {
           type="button"
           aria-expanded={open}
           aria-controls={NAVIGATION_ID}
+          data-cursor-label="MENU"
           onClick={() => setOpen((value) => !value)}
         >
           <span />

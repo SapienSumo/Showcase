@@ -58,6 +58,7 @@ export function Work() {
               role="tab"
               aria-selected={index === activeProject}
               aria-controls={projectPanelId(item.id)}
+              data-cursor-label="VIEW"
               tabIndex={index === activeProject ? 0 : -1}
               onClick={() => selectProject(index)}
               onKeyDown={handleTabKeyDown}
@@ -90,6 +91,7 @@ export function Work() {
               type="button"
               aria-expanded={notesOpen}
               aria-controls={projectNotesId(project.id)}
+              data-cursor-label="READ"
               onClick={() => setNotesOpen((value) => !value)}
             >
               {notesOpen ? 'HIDE CASE NOTES' : 'VIEW CASE NOTES'} <Arrow size={16} />

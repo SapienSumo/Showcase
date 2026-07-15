@@ -8,6 +8,7 @@ A responsive React landing page and design playground inspired by the editorial,
 - TypeScript 6 in strict mode
 - Vite 8
 - CSS custom properties and native layout primitives
+- `requestAnimationFrame` cursor interpolation
 - ESLint with React Hooks rules
 
 ## Run locally
@@ -32,6 +33,15 @@ npm run check
 - `src/styles.css` contains the visual system, responsive layouts, and motion.
 - No component library or runtime styling dependency is required.
 
+## Interaction model
+
+- Every page load and return visit begins with an animated intro layered over the already-rendered site.
+- Begin clears the overlay with a fog-like transition; there is no route change or reload.
+- Intro state is intentionally not persisted, and the footer includes a replay control.
+- Fine-pointer devices receive a themed, smoothly interpolated cursor; touch and reduced-motion environments retain the native experience.
+
+See `READ.md` for the full local setup, responsive system, component flow, and interaction implementation.
+
 ## First customization
 
-The content is intentionally framed as a flexible showcase concept. Replace the example project narratives in `projectData` and the placeholder `hello@example.com` contact address before publishing publicly.
+The content is intentionally framed as a flexible showcase concept. Replace the example project narratives and placeholder `hello@example.com` contact address in `src/data/siteContent.ts` before publishing publicly.
