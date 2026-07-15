@@ -44,6 +44,7 @@ The `scripts` object in `package.json` is the command interface for the project.
 | `npm run dev` | `vite` | Starts the development server with hot module replacement. |
 | `npm run lint` | `eslint .` | Checks source files for lint and React Hooks problems. |
 | `npm run build` | `tsc -b && vite build` | Type-checks first, then creates the production bundle. |
+| `npm run check` | `npm run lint && npm run build` | Runs the complete local quality gate used before review. |
 | `npm run preview` | `vite preview` | Serves the generated `dist/` bundle locally for a production-like check. |
 
 The `&&` in the build script is a command pipeline gate: Vite only bundles the application if TypeScript succeeds. A type error stops the build early.
@@ -51,8 +52,7 @@ The `&&` in the build script is a command pipeline gate: Vite only bundles the a
 Recommended pre-review check:
 
 ```bash
-npm run lint
-npm run build
+npm run check
 ```
 
 ## How a request becomes the page
@@ -81,7 +81,7 @@ During development, Vite serves the modules directly and replaces changed module
 
 React describes the page as reusable components rather than one large HTML document.
 
-`App.tsx` composes the site in page order:
+`App.tsx` is now a deliberately small composition root. It assembles focused modules in page order:
 
 ```tsx
 <Header />
@@ -93,21 +93,21 @@ React describes the page as reusable components rather than one large HTML docum
 <Contact />
 ```
 
-Smaller visual components such as `Arrow`, `Spark`, `Mark`, `HeroVisual`, and `ProjectVisual` are reused inside those sections. This keeps repeated SVG and visual logic in one place.
+The implementations live under `src/components/`. Smaller visual components such as `Arrow`, `Spark`, `Mark`, and `ProjectVisual` are reused inside those sections. This keeps repeated SVG and visual logic in one place while preventing the composition root from accumulating section details.
 
 ### TypeScript
 
 TypeScript checks the shape of props and data before the browser receives the code.
 
-For example, `ProjectVisual` derives its accepted project type directly from `projectData`:
+For example, `ProjectVisual` accepts the shared `Project` contract:
 
 ```tsx
-function ProjectVisual({ project }: {
-  project: (typeof projectData)[number]
-})
+type ProjectVisualProps = {
+  project: Project
+}
 ```
 
-This means the visual component stays synchronized with the project objects without maintaining a second handwritten type. The `as const` declarations also preserve exact project IDs, labels, and color names.
+The data module uses `satisfies readonly Project[]`, so content is checked against the contract without losing exact project IDs, labels, or color names.
 
 The compiler runs in strict mode and rejects unused variables and parameters. It performs checks only; Vite handles the final browser bundle.
 
@@ -248,8 +248,8 @@ The project tab buttons expose `role="tab"` and `aria-selected`. The case-note b
 
 Repeated content is stored in arrays and rendered with `map()`:
 
-- `projectData` produces project tabs and the active project panel;
-- `capabilities` produces the three approach rows;
+- `PROJECTS` produces project tabs and the active project panel;
+- `CAPABILITIES` produces the three approach rows;
 - marquee items are duplicated and mapped to create a seamless animation;
 - tag and chart arrays create small repeated visual elements.
 
@@ -273,7 +273,12 @@ This keeps the landing page self-contained and makes its visuals responsive and 
 | --- | --- |
 | `index.html` | Browser document shell and page metadata. |
 | `src/main.tsx` | React entry point; mounts `App` and imports global CSS. |
-| `src/App.tsx` | Content data, components, state, and semantic page structure. |
+| `src/App.tsx` | Small composition root and the page's main landmark. |
+| `src/components/layout/` | Site-wide layout behavior such as the responsive header. |
+| `src/components/sections/` | Hero, work, approach, principles, and contact sections. |
+| `src/components/ui/` | Reusable SVG interface primitives. |
+| `src/data/siteContent.ts` | Navigation, projects, capabilities, and shared content constants. |
+| `src/types/content.ts` | Shared TypeScript contracts for content. |
 | `src/styles.css` | Tokens, shared classes, layout, responsive rules, and animation. |
 | `vite.config.ts` | Vite and React plugin configuration. |
 | `tsconfig.app.json` | Strict TypeScript rules for browser source. |

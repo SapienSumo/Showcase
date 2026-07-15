@@ -20,13 +20,15 @@ npm run dev
 Production checks:
 
 ```bash
-npm run lint
-npm run build
+npm run check
 ```
 
 ## Structure
 
-- `src/App.tsx` contains the page sections and small interactive components.
+- `src/App.tsx` contains the top-level page composition.
+- `src/components/` contains focused layout, section, and UI components.
+- `src/data/siteContent.ts` contains reusable navigation, project, and capability data.
+- `src/types/content.ts` contains shared content contracts.
 - `src/styles.css` contains the visual system, responsive layouts, and motion.
 - No component library or runtime styling dependency is required.
 
